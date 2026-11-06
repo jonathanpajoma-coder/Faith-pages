@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<title>FAITH</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --ink: #0a0a0a;
+    --muted: #5c5c5c;
+    --line: #e4e4e4;
+    --field: #f6f6f6;
+    --btn-bg: #0a0a0a;
+    --btn-ink: #ffffff;
+    --ok: #17703a;
+    --err: #b3261b;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b0b0b;
+      --ink: #f5f5f5;
+      --muted: #a8a8a8;
+      --line: #2a2a2a;
+      --field: #161616;
+      --btn-bg: #f5f5f5;
+      --btn-ink: #0a0a0a;
+      --ok: #5fd08a;
+      --err: #ff8a80;
+    }
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { height: 100%; }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Montserrat", "Avenir Next", "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+  }
+  main {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 22px 36px;
+  }
+  .brand {
+    margin: 40px 0 44px;
+    font-size: 2.1rem;
+    font-weight: 700;
+    letter-spacing: .32em;
+    padding-left: .32em;
+    text-transform: uppercase;
+  }
+  .card {
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 30px 24px 28px;
+  }
+  h1 {
+    margin: 0 0 10px;
+    font-size: 1.45rem;
+    line-height: 1.25;
+    font-weight: 700;
+  }
+  p { margin: 0; color: var(--muted); font-size: 1rem; }
+  .status-ok h1 { color: var(--ok); }
+  .status-err h1 { color: var(--err); }
+  form { margin-top: 24px; display: grid; gap: 16px; }
+  label { display: block; font-size: .92rem; font-weight: 600; margin-bottom: 6px; }
+  .field { position: relative; }
+  input[type="password"], input[type="text"] {
+    width: 100%;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--ink);
+    background: var(--field);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 84px 14px 14px;
+  }
+  input:focus-visible, button:focus-visible, .lang button:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 2px;
+  }
+  .toggle {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    font: inherit;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--muted);
+    background: transparent;
+    border: 0;
+    padding: 8px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .primary {
+    font: inherit;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--btn-ink);
+    background: var(--btn-bg);
+    border: 0;
+    border-radius: 999px;
+    padding: 15px 20px;
+    cursor: pointer;
+    min-height: 52px;
+  }
+  .primary[disabled] { opacity: .55; cursor: progress; }
+  .msg { min-height: 1.4em; font-size: .93rem; color: var(--err); }
+  .lang {
+    margin-top: 28px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .lang button {
+    font: inherit;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 7px 14px;
+    cursor: pointer;
+  }
+  .lang button[aria-pressed="true"] {
+    color: var(--btn-ink);
+    background: var(--btn-bg);
+    border-color: var(--btn-bg);
+  }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand" aria-label="FAITH">FAITH</div>
+
+  <section class="card" id="card" aria-live="polite">
+    <div id="view-result">
+      <h1 id="res-title"></h1>
+      <p id="res-text"></p>
+    </div>
+
+    <form id="view-form" hidden novalidate>
+      <div>
+        <h1 id="form-title"></h1>
+        <p id="form-text"></p>
+      </div>
+      <div>
+        <label for="pw1" id="lbl-pw1"></label>
+        <div class="field">
+          <input id="pw1" type="password" autocomplete="new-password" minlength="6" maxlength="72" required>
+          <button type="button" class="toggle" id="tg1"></button>
+        </div>
+      </div>
+      <div>
+        <label for="pw2" id="lbl-pw2"></label>
+        <div class="field">
+          <input id="pw2" type="password" autocomplete="new-password" minlength="6" maxlength="72" required>
+          <button type="button" class="toggle" id="tg2"></button>
+        </div>
+      </div>
+      <div class="msg" id="msg" role="alert"></div>
+      <button class="primary" id="save" type="submit"></button>
+    </form>
+  </section>
+
+  <nav class="lang" aria-label="Language">
+    <button type="button" data-lang="fr">FR</button>
+    <button type="button" data-lang="en">EN</button>
+    <button type="button" data-lang="es">ES</button>
+    <button type="button" data-lang="de">DE</button>
+  </nav>
+</main>
+
+<script>
+"use strict";
+
+// Valeurs publiques (adresse du projet et clé « publishable »). Aucune clé secrète ici.
+var SUPABASE_URL = "https://fhtmlrhpusohdcgfjlxn.supabase.co";
+var PUBLISHABLE_KEY = "sb_publishable_y_ZhAj2-nprJaI6ZEjGFRQ_9Q0A-KT3";
+var MIN_LENGTH = 6;
+var MAX_LENGTH = 72; // limite technique du serveur d’authentification
+
+var STRINGS = {
+  fr: {
+    confirmedTitle: "E-mail confirmé",
+    confirmedText: "Votre adresse e-mail est confirmée. Retournez dans l’application FAITH et connectez-vous.",
+    resetTitle: "Nouveau mot de passe",
+    resetText: "Choisissez un nouveau mot de passe d’au moins 6 caractères.",
+    pw1: "Nouveau mot de passe",
+    pw2: "Confirmer le mot de passe",
+    save: "Enregistrer le mot de passe",
+    saving: "Enregistrement…",
+    show: "Afficher",
+    hide: "Masquer",
+    errShort: "Le mot de passe doit contenir au moins 6 caractères.",
+    errMatch: "Les deux mots de passe ne sont pas identiques.",
+    errSame: "Ce mot de passe est identique à l’ancien. Choisissez-en un autre.",
+    errWeak: "Ce mot de passe est refusé. Choisissez-en un plus long ou plus varié.",
+    errNet: "Connexion impossible. Vérifiez votre réseau et réessayez.",
+    errGeneric: "Le mot de passe n’a pas pu être modifié. Réessayez dans un instant.",
+    expiredTitle: "Lien expiré",
+    expiredText: "Ce lien a expiré ou a déjà été utilisé. Retournez dans l’application FAITH et demandez un nouveau lien.",
+    doneTitle: "Mot de passe modifié",
+    doneText: "Retournez dans l’application FAITH et connectez-vous avec votre nouveau mot de passe.",
+    neutralTitle: "FAITH",
+    neutralText: "Ouvrez l’application FAITH pour continuer."
+  },
+  en: {
+    confirmedTitle: "Email confirmed",
+    confirmedText: "Your email address is confirmed. Go back to the FAITH app and sign in.",
+    resetTitle: "New password",
+    resetText: "Choose a new password of at least 6 characters.",
+    pw1: "New password",
+    pw2: "Confirm password",
+    save: "Save password",
+    saving: "Saving…",
+    show: "Show",
+    hide: "Hide",
+    errShort: "The password must be at least 6 characters long.",
+    errMatch: "The two passwords do not match.",
+    errSame: "This password is the same as the old one. Choose a different one.",
+    errWeak: "This password was rejected. Choose a longer or more varied one.",
+    errNet: "Connection failed. Check your network and try again.",
+    errGeneric: "The password could not be changed. Try again in a moment.",
+    expiredTitle: "Link expired",
+    expiredText: "This link has expired or was already used. Go back to the FAITH app and request a new link.",
+    doneTitle: "Password changed",
+    doneText: "Go back to the FAITH app and sign in with your new password.",
+    neutralTitle: "FAITH",
+    neutralText: "Open the FAITH app to continue."
+  },
+  es: {
+    confirmedTitle: "Correo confirmado",
+    confirmedText: "Tu dirección de correo está confirmada. Vuelve a la aplicación FAITH e inicia sesión.",
+    resetTitle: "Nueva contraseña",
+    resetText: "Elige una nueva contraseña de al menos 6 caracteres.",
+    pw1: "Nueva contraseña",
+    pw2: "Confirmar contraseña",
+    save: "Guardar contraseña",
+    saving: "Guardando…",
+    show: "Mostrar",
+    hide: "Ocultar",
+    errShort: "La contraseña debe tener al menos 6 caracteres.",
+    errMatch: "Las dos contraseñas no coinciden.",
+    errSame: "Esta contraseña es igual a la anterior. Elige otra.",
+    errWeak: "Esta contraseña fue rechazada. Elige una más larga o más variada.",
+    errNet: "No se pudo conectar. Revisa tu red e inténtalo de nuevo.",
+    errGeneric: "No se pudo cambiar la contraseña. Inténtalo de nuevo en un momento.",
+    expiredTitle: "Enlace caducado",
+    expiredText: "Este enlace ha caducado o ya se usó. Vuelve a la aplicación FAITH y solicita un enlace nuevo.",
+    doneTitle: "Contraseña cambiada",
+    doneText: "Vuelve a la aplicación FAITH e inicia sesión con tu nueva contraseña.",
+    neutralTitle: "FAITH",
+    neutralText: "Abre la aplicación FAITH para continuar."
+  },
+  de: {
+    confirmedTitle: "E-Mail bestätigt",
+    confirmedText: "Ihre E-Mail-Adresse ist bestätigt. Kehren Sie zur FAITH-App zurück und melden Sie sich an.",
+    resetTitle: "Neues Passwort",
+    resetText: "Wählen Sie ein neues Passwort mit mindestens 6 Zeichen.",
+    pw1: "Neues Passwort",
+    pw2: "Passwort bestätigen",
+    save: "Passwort speichern",
+    saving: "Wird gespeichert…",
+    show: "Anzeigen",
+    hide: "Verbergen",
+    errShort: "Das Passwort muss mindestens 6 Zeichen lang sein.",
+    errMatch: "Die beiden Passwörter stimmen nicht überein.",
+    errSame: "Dieses Passwort entspricht dem alten. Wählen Sie ein anderes.",
+    errWeak: "Dieses Passwort wurde abgelehnt. Wählen Sie ein längeres oder vielfältigeres.",
+    errNet: "Verbindung fehlgeschlagen. Prüfen Sie Ihr Netzwerk und versuchen Sie es erneut.",
+    errGeneric: "Das Passwort konnte nicht geändert werden. Versuchen Sie es gleich noch einmal.",
+    expiredTitle: "Link abgelaufen",
+    expiredText: "Dieser Link ist abgelaufen oder wurde bereits verwendet. Kehren Sie zur FAITH-App zurück und fordern Sie einen neuen Link an.",
+    doneTitle: "Passwort geändert",
+    doneText: "Kehren Sie zur FAITH-App zurück und melden Sie sich mit Ihrem neuen Passwort an.",
+    neutralTitle: "FAITH",
+    neutralText: "Öffnen Sie die FAITH-App, um fortzufahren."
+  }
+};
+
+// ---- Fonctions pures (testées séparément) ----
+
+function pickLanguage(search, navigatorLang) {
+  var wanted = "";
+  try {
+    wanted = (new URLSearchParams(search).get("lang") || "").toLowerCase();
+  } catch (e) { wanted = ""; }
+  if (STRINGS[wanted]) return wanted;
+  var nav = String(navigatorLang || "").slice(0, 2).toLowerCase();
+  return STRINGS[nav] ? nav : "fr";
+}
+
+// Lit ce que Supabase met après le « # » du lien reçu par e-mail.
+function parseLink(hash, search) {
+  var h = new URLSearchParams(String(hash || "").replace(/^#/, ""));
+  var q = new URLSearchParams(String(search || "").replace(/^\?/, ""));
+  var error = h.get("error") || h.get("error_code") || q.get("error") || q.get("error_code");
+  if (error) return { kind: "expired" };
+  var type = h.get("type") || "";
+  var token = h.get("access_token") || "";
+  if (type === "recovery" && token) return { kind: "recovery", token: token };
+  if ((type === "signup" || type === "email_change" || type === "invite") && token) return { kind: "confirmed" };
+  // Lien au format « code » (PKCE) : il ne peut pas être traité par cette page.
+  if (q.get("code")) return { kind: "expired" };
+  return { kind: "neutral" };
+}
+
+function validatePasswords(a, b) {
+  if (typeof a !== "string" || a.length < MIN_LENGTH || a.length > MAX_LENGTH) return "errShort";
+  if (a !== b) return "errMatch";
+  return null;
+}
+
+function mapApiError(status, body) {
+  var code = body && (body.error_code || body.code) ? String(body.error_code || body.code) : "";
+  if (code === "same_password") return "errSame";
+  if (code === "weak_password") return "errWeak";
+  if (status === 401 || status === 403 || code === "bad_jwt" || code === "session_not_found" || code === "session_expired") return "expired";
+  if (status === 422) return "errWeak";
+  return "errGeneric";
+}
+
+// ---- Interface ----
+
+var state = { lang: "fr", link: { kind: "neutral" }, done: false, busy: false, shown: [false, false] };
+
+function t(key) { return STRINGS[state.lang][key]; }
+function $(id) { return document.getElementById(id); }
+
+function showResult(titleKey, textKey, tone) {
+  $("view-form").hidden = true;
+  $("view-result").hidden = false;
+  $("card").className = "card" + (tone ? " status-" + tone : "");
+  $("res-title").textContent = t(titleKey);
+  $("res-text").textContent = t(textKey);
+}
+
+function render() {
+  document.documentElement.lang = state.lang;
+  var buttons = document.querySelectorAll(".lang button");
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].setAttribute("aria-pressed", String(buttons[i].getAttribute("data-lang") === state.lang));
+  }
+  var kind = state.link.kind;
+  if (state.done) return showResult("doneTitle", "doneText", "ok");
+  if (kind === "confirmed") return showResult("confirmedTitle", "confirmedText", "ok");
+  if (kind === "expired") return showResult("expiredTitle", "expiredText", "err");
+  if (kind === "recovery") {
+    $("view-result").hidden = true;
+    $("view-form").hidden = false;
+    $("card").className = "card";
+    $("form-title").textContent = t("resetTitle");
+    $("form-text").textContent = t("resetText");
+    $("lbl-pw1").textContent = t("pw1");
+    $("lbl-pw2").textContent = t("pw2");
+    $("save").textContent = state.busy ? t("saving") : t("save");
+    $("tg1").textContent = state.shown[0] ? t("hide") : t("show");
+    $("tg2").textContent = state.shown[1] ? t("hide") : t("show");
+    return;
+  }
+  showResult("neutralTitle", "neutralText", "");
+}
+
+function setMessage(key) { $("msg").textContent = key ? t(key) : ""; }
+
+function request(method, path, token, payload) {
+  return fetch(SUPABASE_URL + path, {
+    method: method,
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": PUBLISHABLE_KEY,
+      "Authorization": "Bearer " + token
+    },
+    body: payload ? JSON.stringify(payload) : undefined
+  });
+}
+
+function onSubmit(event) {
+  event.preventDefault();
+  if (state.busy) return;
+  var a = $("pw1").value, b = $("pw2").value;
+  var problem = validatePasswords(a, b);
+  if (problem) { setMessage(problem); return; }
+  setMessage(null);
+  state.busy = true; $("save").disabled = true; render();
+  var token = state.link.token;
+  request("PUT", "/auth/v1/user", token, { password: a })
+    .then(function (res) {
+      return res.json().catch(function () { return null; }).then(function (body) { return { res: res, body: body }; });
+    })
+    .then(function (r) {
+      if (r.res.ok) {
+        // Ferme toutes les sessions ouvertes avec l’ancien mot de passe (meilleur effort).
+        request("POST", "/auth/v1/logout?scope=global", token).catch(function () {});
+        state.link = { kind: "neutral" };
+        state.done = true;
+        $("pw1").value = ""; $("pw2").value = "";
+        return;
+      }
+      var key = mapApiError(r.res.status, r.body);
+      if (key === "expired") { state.link = { kind: "expired" }; return; }
+      setMessage(key);
+    })
+    .catch(function () { setMessage("errNet"); })
+    .then(function () { state.busy = false; $("save").disabled = false; render(); });
+}
+
+function togglePassword(index) {
+  state.shown[index] = !state.shown[index];
+  $(index === 0 ? "pw1" : "pw2").type = state.shown[index] ? "text" : "password";
+  render();
+}
+
+function init() {
+  state.lang = pickLanguage(location.search, navigator.language);
+  state.link = parseLink(location.hash, location.search);
+  // Efface le lien (et ses jetons) de la barre d’adresse et de l’historique.
+  if (location.hash || location.search) {
+    try { history.replaceState(null, "", location.pathname); } catch (e) {}
+  }
+  var langButtons = document.querySelectorAll(".lang button");
+  for (var i = 0; i < langButtons.length; i++) {
+    langButtons[i].addEventListener("click", function (e) {
+      state.lang = e.currentTarget.getAttribute("data-lang");
+      setMessage(null);
+      render();
+    });
+  }
+  $("view-form").addEventListener("submit", onSubmit);
+  $("tg1").addEventListener("click", function () { togglePassword(0); });
+  $("tg2").addEventListener("click", function () { togglePassword(1); });
+  render();
+}
+
+if (typeof document !== "undefined") { init(); }
+</script>
+</body>
+</html>
